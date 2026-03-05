@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# 加载 ESP-IDF 环境
+ESP_IDF_EXPORT="$HOME/esp/esp-idf/export.sh"
+if [ ! -f "$ESP_IDF_EXPORT" ]; then
+    echo "错误：未找到 ESP-IDF 环境脚本：$ESP_IDF_EXPORT" >&2
+    exit 1
+fi
+# export.sh 会输出大量日志，重定向到 /dev/null 保持终端整洁
+. "$ESP_IDF_EXPORT" > /dev/null 2>&1
+
+# 自动查找 /dev/tty.usbmodem* 设备并运行 idf.py monitor
+
+DEVICES=(/dev/tty.usbmodem*)
+
+if [ ${#DEVICES[@]} -eq 0 ] || [ ! -e "${DEVICES[0]}" ]; then
+    echo "错误：未找到任何 /dev/tty.usbmodem* 设备，请确认设备已连接。" >&2
+    exit 1
+fi
+
+if [ ${#DEVICES[@]} -eq 1 ]; then
+    PORT="${DEVICES[0]}"
+    echo "使用端口：$PORT"
+else
+    echo "找到多个 usbmodem 设备，请选择（按连接时间排序，最新的在前）："
+    echo ""
+
+    # 按修改时间降序排列（最近连接的在前）
+    SORTED_DEVICES=$(stat -f "%m %N" "${DEVICES[@]}" | sort -rn | awk '{print $2}')
+
+    i=1
+    while IFS= read -r dev; do
+        CONNECT_TIME=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" "$dev")
+        printf "  [%d] %s  （连接时间：%s）\n" "$i" "$dev" "$CONNECT_TIME"
+        i=$((i + 1))
+    done <<< "$SORTED_DEVICES"
+
+    echo ""
+    printf "请输入编号 [1-%d]：" "${#DEVICES[@]}"
+    read -r CHOICE
+
+    if ! [[ "$CHOICE" =~ ^[0-9]+$ ]] || [ "$CHOICE" -lt 1 ] || [ "$CHOICE" -gt "${#DEVICES[@]}" ]; then
+        echo "错误：无效的选择。" >&2
+        exit 1
+    fi
+
+    PORT=$(echo "$SORTED_DEVICES" | sed -n "${CHOICE}p")
+    echo "使用端口：$PORT"
+fi
+
+idf-monitor monitor --port "$PORT"
