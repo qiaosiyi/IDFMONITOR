@@ -49,7 +49,7 @@ else
 fi
 
 # 检测端口是否已被占用
-LOCK_PIDS=$(lsof -t "$PORT" 2>/dev/null)
+LOCK_PIDS=$(lsof -t "$(echo "$PORT" | sed 's/tty/cu/')" 2>/dev/null)
 if [ -n "$LOCK_PIDS" ]; then
     echo ""
     echo "警告：端口 $PORT 已被以下进程占用：" >&2
@@ -71,3 +71,4 @@ if [ -n "$LOCK_PIDS" ]; then
 fi
 
 idf-monitor monitor --port "$PORT"
+
