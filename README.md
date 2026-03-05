@@ -17,16 +17,19 @@ A lightweight shell script that automatically detects USB serial devices and lau
 
 ## 安装
 
-赋予脚本执行权限：
+一行命令完成下载、赋权、创建全局软链接：
 
 ```bash
-chmod +x idfmonitor
+curl -fsSL https://raw.githubusercontent.com/qiaosiyi/IDFMONITOR/main/idfmonitor \
+  -o /usr/local/bin/idfmonitor && chmod +x /usr/local/bin/idfmonitor
 ```
 
-（可选）创建全局软链接，以便在任意目录直接使用：
+安装完成后即可在任意目录直接使用 `idfmonitor` 命令。
+
+如需手动安装，赋予脚本执行权限并创建软链接：
 
 ```bash
-ln -s "$(pwd)/idfmonitor" /usr/local/bin/idfmonitor
+chmod +x idfmonitor && ln -sf "$(pwd)/idfmonitor" /usr/local/bin/idfmonitor
 ```
 
 ## 使用方法

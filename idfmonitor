@@ -48,4 +48,26 @@ else
     echo "使用端口：$PORT"
 fi
 
+# 检测端口是否已被占用
+LOCK_PIDS=$(lsof -t "$PORT" 2>/dev/null)
+if [ -n "$LOCK_PIDS" ]; then
+    echo ""
+    echo "警告：端口 $PORT 已被以下进程占用：" >&2
+    echo ""
+    for pid in $LOCK_PIDS; do
+        ps -p "$pid" -o pid,comm,args | tail -n +2 | awk '{printf "  PID %-8s %s\n", $1, substr($0, index($0,$2))}'
+    done
+    echo ""
+    printf "是否终止上述进程并继续？[y/N]："
+    read -r CONFIRM
+    if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
+        kill $LOCK_PIDS 2>/dev/null
+        sleep 0.5
+        echo "已终止占用进程，继续启动..."
+    else
+        echo "已取消。请先关闭占用该端口的终端窗口后重试。" >&2
+        exit 1
+    fi
+fi
+
 idf-monitor monitor --port "$PORT"
