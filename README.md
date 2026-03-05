@@ -26,7 +26,7 @@ curl -fsSL https://raw.githubusercontent.com/qiaosiyi/IDFMONITOR/main/idfmonitor
 
 安装完成后即可在任意目录直接使用 `idfmonitor` 命令。
 
-如需手动安装，赋予脚本执行权限并创建软链接：
+如需手动安装，请clone 本repo后，赋予脚本执行权限并创建软链接：
 
 ```bash
 chmod +x idfmonitor && ln -sf "$(pwd)/idfmonitor" /usr/local/bin/idfmonitor
@@ -34,13 +34,7 @@ chmod +x idfmonitor && ln -sf "$(pwd)/idfmonitor" /usr/local/bin/idfmonitor
 
 ## 使用方法
 
-在项目目录下直接运行：
-
-```bash
-./idfmonitor
-```
-
-或安装到全局后：
+安装到全局后：
 
 ```bash
 idfmonitor
@@ -52,6 +46,10 @@ idfmonitor
 
 ```
 使用端口：/dev/tty.usbmodem5AF61211261
+
+...
+...
+......
 ```
 
 ### 多个设备
