@@ -70,5 +70,5 @@ if [ -n "$LOCK_PIDS" ]; then
     fi
 fi
 
-idf-monitor monitor --port "$PORT"
+idf-monitor monitor --no-reset --port "$PORT"
 
